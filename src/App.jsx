@@ -14,7 +14,10 @@ function App() {
       try {
         const response = await fetch('https://podcast-api.netlify.app/');
         const data = await response.json();
-        setShows(data); // Assuming data is an array of shows
+
+        // Sort shows alphabetically by title before setting state
+        const sortedData = data.sort((a, b) => a.title.localeCompare(b.title));
+        setShows(sortedData);
       } catch (error) {
         console.error('Error fetching shows:', error);
       }
@@ -22,6 +25,15 @@ function App() {
 
     fetchShows();
   }, []);
+
+  // Function to toggle favorites
+  const toggleEpisodeFavourite = (episode) => {
+    if (favourites.some(fav => fav.episode === episode.episode && fav.showTitle === episode.showTitle)) {
+      setFavourites(favourites.filter(fav => !(fav.episode === episode.episode && fav.showTitle === episode.showTitle)));
+    } else {
+      setFavourites([...favourites, { ...episode, showTitle: episode.showTitle }]);
+    }
+  };
 
   return (
     <div className="App">
@@ -35,31 +47,23 @@ function App() {
 
       {/* Render the appropriate view based on the state */}
       {view === 'shows' && (
-        <ShowList 
-          shows={shows} 
-          toggleFavourite={(episode) => {
-            if (favourites.some(fav => fav.episode === episode.episode && fav.showTitle === episode.showTitle)) {
-              setFavourites(favourites.filter(fav => !(fav.episode === episode.episode && fav.showTitle === episode.showTitle)));
-            } else {
-              setFavourites([...favourites, { ...episode, showTitle: episode.showTitle }]);
-            }
-          }} 
-          favourites={favourites} 
-          setFavourites={setFavourites} 
+        <ShowList
+          shows={shows}
+          toggleFavourite={toggleEpisodeFavourite}  // Use the toggle function here
+          favourites={favourites}
+          setFavourites={setFavourites}
         />
       )}
       {view === 'favourites' && (
-        <Favourites 
-          favourites={favourites} 
-          toggleFavourite={(episode) => {
-            if (favourites.some(fav => fav.episode === episode.episode && fav.showTitle === episode.showTitle)) {
-              setFavourites(favourites.filter(fav => !(fav.episode === episode.episode && fav.showTitle === episode.showTitle)));
-            } else {
-              setFavourites([...favourites, { ...episode, showTitle: episode.showTitle }]);
-            }
-          }} 
+        <Favourites
+          favourites={favourites}
+          toggleEpisodeFavourite={toggleEpisodeFavourite}  // Pass the toggle function to Favourites
+          setFavourites={setFavourites}
         />
       )}
+
+      {/* Modal Component (if needed) */}
+      <Modal />
     </div>
   );
 }
