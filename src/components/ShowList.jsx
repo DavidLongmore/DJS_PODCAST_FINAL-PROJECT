@@ -1,7 +1,8 @@
+// ShowList.js
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 
-function ShowList({ shows, favourites, setFavourites }) {
+function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
   const [selectedShow, setSelectedShow] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSeason, setSelectedSeason] = useState(null);
@@ -72,25 +73,8 @@ function ShowList({ shows, favourites, setFavourites }) {
     setSeasonImage(season.image);
   };
 
-  const toggleEpisodeFavourite = (episode) => {
-    const favorite = {
-      ...episode,
-      showTitle: selectedShow.title,
-      seasonTitle: selectedSeason.title,
-      addedAt: new Date().toLocaleString(),
-      updated: selectedShow.updated,
-    };
-
-    const alreadyFavorited = favourites.some(
-      (fav) =>
-        fav.episode === episode.episode &&
-        fav.showTitle === selectedShow.title &&
-        fav.seasonTitle === selectedSeason.title
-    );
-
-    setFavourites(alreadyFavorited
-      ? favourites.filter((fav) => !(fav.episode === episode.episode && fav.showTitle === selectedShow.title && fav.seasonTitle === selectedSeason.title))
-      : [...favourites, favorite]);
+  const handlePlayEpisode = (episode) => {
+    setSelectedEpisode(episode);
   };
 
   const renderSortAndFilter = () => (
@@ -161,7 +145,8 @@ function ShowList({ shows, favourites, setFavourites }) {
               Episode {episode.episode}: {episode.title}
             </h5>
             <p>{episode.description}</p>
-            <button onClick={() => toggleEpisodeFavourite(episode)}>
+            <p>Last Updated: {new Date(selectedShow.updated).toLocaleDateString()}</p>
+            <button onClick={() => toggleFavourite({ ...episode, showTitle: selectedShow.title, seasonTitle: selectedSeason.title, addedAt: new Date().toLocaleString(), updated: selectedShow.updated })}>
               {favourites.some(
                 (fav) =>
                   fav.episode === episode.episode &&
@@ -171,6 +156,7 @@ function ShowList({ shows, favourites, setFavourites }) {
                 ? 'Unfavourite'
                 : 'Favourite'}
             </button>
+            <button onClick={() => handlePlayEpisode(episode)}>Play Episode</button>
           </div>
         ))
       ) : (

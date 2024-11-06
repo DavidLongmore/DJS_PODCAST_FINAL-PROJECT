@@ -1,6 +1,8 @@
+// Favourites.js
 import React, { useState } from 'react';
+import './Favourites.css';
 
-function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites }) {
+function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites, setSelectedEpisode }) {
   const [sortOption, setSortOption] = useState('A-Z');
 
   // Group favorites by show, then by season
@@ -37,9 +39,13 @@ function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites }) {
     }
   };
 
+  const handlePlayEpisode = (episode) => {
+    setSelectedEpisode(episode);
+  };
+
   return (
-    <div>
-      <h2>Favourites</h2>
+    <div className="favourites-container">
+      <h2>Favourite Episodes</h2>
       <div style={styles.dropdown}>
         <label htmlFor="sort-options">Sort By: </label>
         <select
@@ -61,7 +67,7 @@ function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites }) {
 
       {sortedFavourites.map((showTitle) => {
         const show = groupedFavourites[showTitle];
-        const lastUpdated = new Date(show.updated).toLocaleDateString();
+        const lastUpdated = new Date(show.updated).toLocaleString();
 
         return (
           <div key={showTitle} style={styles.showSection}>
@@ -73,11 +79,18 @@ function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites }) {
                 <h4>{seasonTitle}</h4>
                 {show.seasons[seasonTitle].map((episode) => (
                   <div key={episode.episode} style={styles.episode}>
-                    <p>{`Episode ${episode.episode}: ${episode.title}`}</p>
-                    <p>{`Added: ${new Date(episode.addedAt).toLocaleDateString()}`}</p>
-                    <button onClick={() => toggleEpisodeFavourite(episode)}>
-                      Unfavourite
-                    </button>
+                    <div>
+                      <p>{`Episode ${episode.episode}: ${episode.title}`}</p>
+                      <p>{`Added: ${new Date(episode.addedAt).toLocaleString()}`}</p>
+                    </div>
+                    <div>
+                      <button onClick={() => toggleEpisodeFavourite(episode)} className="unfavourite-button">
+                        Unfavourite
+                      </button>
+                      <button onClick={() => handlePlayEpisode(episode)} className="play-button">
+                        Play Episode
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

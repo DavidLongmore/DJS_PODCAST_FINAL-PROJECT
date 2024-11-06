@@ -1,59 +1,46 @@
-import React, { useState, useEffect } from 'react';
+// AudioPlayer.js
+import React, { useEffect, useRef } from 'react';
+import './AudioPlayer.css';
 
-const AudioPlayer = ({ audioUrl, onClose }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const audioRef = React.useRef(new Audio(audioUrl));
-
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-      setDuration(audio.duration);
-    };
-
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    
-    if (isPlaying) {
-      audio.play();
-    } else {
-      audio.pause();
-    }
-
-    return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.pause(); // Stop audio when unmounting
-    };
-  }, [isPlaying, audioUrl]);
+function AudioPlayer({ episode, onClose }) {
+  const audioRef = useRef(null);
 
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (isPlaying) {
-        const message = 'You have audio playing. Are you sure you want to leave?';
-        e.returnValue = message; // For Chrome
-        return message; // For Firefox
+    const playAudio = async () => {
+      if (audioRef.current) {
+        try {
+          await audioRef.current.play();
+        } catch (error) {
+          console.error('Error attempting to play audio:', error);
+        }
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setTimeout(playAudio, 0); // Ensure play is called after pause
+    }
+
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     };
-  }, [isPlaying]);
+  }, [episode]);
 
   return (
     <div className="audio-player">
-      <button onClick={() => setIsPlaying(!isPlaying)}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
-      <div>
-        <span>Current Time: {Math.floor(currentTime)} / {Math.floor(duration)}</span>
+      <div className="audio-content">
+        <span className="close" onClick={onClose}>&times;</span>
+        <h3>{episode.title}</h3>
+        <audio ref={audioRef} controls>
+          <source src={episode.file} type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
       </div>
-      <button onClick={onClose}>Close Player</button>
     </div>
   );
-};
+}
 
 export default AudioPlayer;

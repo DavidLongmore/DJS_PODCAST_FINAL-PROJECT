@@ -1,12 +1,36 @@
-.audio-player {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-}
+/* AudioPlayer.css */
 
-audio {
+.audio-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    margin: 10px 0;
-}
+    background-color: #333;
+    color: white;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .audio-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .close {
+    cursor: pointer;
+    font-size: 20px;
+    margin-right: 15px;
+  }
+  
+  audio {
+    width: 80%;
+  }
+  
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    padding-right: 10px;
+  }
+  

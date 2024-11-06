@@ -1,6 +1,8 @@
+// App.jsx
 import React, { useState, useEffect } from 'react';
 import ShowList from './components/ShowList';
 import Favourites from './components/Favourites';
+import AudioPlayer from './components/AudioPlayer';
 import Modal from './components/Modal';
 import Loader from './components/Loader'; // Import the loader component
 
@@ -9,6 +11,7 @@ function App() {
   const [favourites, setFavourites] = useState([]);
   const [view, setView] = useState('shows');
   const [loading, setLoading] = useState(true); // Loading state
+  const [selectedEpisode, setSelectedEpisode] = useState(null);
 
   // Fetch shows from API when the component mounts
   useEffect(() => {
@@ -65,21 +68,26 @@ function App() {
               shows={shows}
               toggleFavourite={toggleEpisodeFavourite}
               favourites={favourites}
-              setFavourites={setFavourites}
+              setSelectedEpisode={setSelectedEpisode}
             />
           )}
           {view === 'favourites' && (
             <Favourites
               favourites={favourites}
               toggleEpisodeFavourite={toggleEpisodeFavourite}
-              setFavourites={setFavourites}
+              setSelectedEpisode={setSelectedEpisode}
               resetFavourites={resetFavourites}
             />
           )}
         </>
       )}
 
-      <Modal />
+      {selectedEpisode && (
+        <AudioPlayer
+          episode={selectedEpisode}
+          onClose={() => setSelectedEpisode(null)}
+        />
+      )}
     </div>
   );
 }
