@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import ShowList from './components/ShowList';
 import Favourites from './components/Favourites';
 import Modal from './components/Modal';
+import Loader from './components/Loader'; // Import the loader component
 
 function App() {
   const [shows, setShows] = useState([]);
   const [favourites, setFavourites] = useState([]);
-  const [view, setView] = useState('shows'); // State to toggle between views
+  const [view, setView] = useState('shows');
+  const [loading, setLoading] = useState(true); // Loading state
 
   // Fetch shows from API when the component mounts
   useEffect(() => {
     const fetchShows = async () => {
       try {
+        setLoading(true); // Start loading
         const response = await fetch('https://podcast-api.netlify.app/');
         const data = await response.json();
 
@@ -20,18 +23,25 @@ function App() {
         setShows(sortedData);
       } catch (error) {
         console.error('Error fetching shows:', error);
+      } finally {
+        setLoading(false); // End loading
       }
     };
 
     fetchShows();
   }, []);
 
-  // Function to toggle favorites
   const toggleEpisodeFavourite = (episode) => {
     if (favourites.some(fav => fav.episode === episode.episode && fav.showTitle === episode.showTitle)) {
       setFavourites(favourites.filter(fav => !(fav.episode === episode.episode && fav.showTitle === episode.showTitle)));
     } else {
       setFavourites([...favourites, { ...episode, showTitle: episode.showTitle }]);
+    }
+  };
+
+  const resetFavourites = () => {
+    if (window.confirm('Are you sure you want to reset all favourites?')) {
+      setFavourites([]);
     }
   };
 
@@ -45,30 +55,35 @@ function App() {
         </div>
       </nav>
 
-      {/* Render the appropriate view based on the state */}
-      {view === 'shows' && (
-        <ShowList
-          shows={shows}
-          toggleFavourite={toggleEpisodeFavourite}  // Use the toggle function here
-          favourites={favourites}
-          setFavourites={setFavourites}
-        />
-      )}
-      {view === 'favourites' && (
-        <Favourites
-          favourites={favourites}
-          toggleEpisodeFavourite={toggleEpisodeFavourite}  // Pass the toggle function to Favourites
-          setFavourites={setFavourites}
-        />
+      {/* Conditionally render Loader or the main content */}
+      {loading ? (
+        <Loader /> // Display loader if loading is true
+      ) : (
+        <>
+          {view === 'shows' && (
+            <ShowList
+              shows={shows}
+              toggleFavourite={toggleEpisodeFavourite}
+              favourites={favourites}
+              setFavourites={setFavourites}
+            />
+          )}
+          {view === 'favourites' && (
+            <Favourites
+              favourites={favourites}
+              toggleEpisodeFavourite={toggleEpisodeFavourite}
+              setFavourites={setFavourites}
+              resetFavourites={resetFavourites}
+            />
+          )}
+        </>
       )}
 
-      {/* Modal Component (if needed) */}
       <Modal />
     </div>
   );
 }
 
-// Simple styles for the navbar
 const styles = {
   nav: {
     display: 'flex',

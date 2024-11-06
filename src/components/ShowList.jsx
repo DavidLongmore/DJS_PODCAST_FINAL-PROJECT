@@ -27,10 +27,7 @@ function ShowList({ shows, favourites, setFavourites }) {
         }
       }
       // Create a map for genres
-      const genresObject = { 'All': 'All' };
-      genreList.forEach((genre) => {
-        genresObject[genre.id] = genre.title;
-      });
+      const genresObject = { 'All': 'All', ...Object.fromEntries(genreList.map(genre => [genre.id, genre.title])) };
       setGenresMap(genresObject);
     };
     fetchGenres();
@@ -41,16 +38,13 @@ function ShowList({ shows, favourites, setFavourites }) {
     return [...shows]
       .filter((show) => selectedGenre === 'All' || show.genres.includes(parseInt(selectedGenre)))
       .sort((a, b) => {
-        if (sortOption === 'A-Z') {
-          return a.title.localeCompare(b.title);
-        } else if (sortOption === 'Z-A') {
-          return b.title.localeCompare(a.title);
-        } else if (sortOption === 'Most Recently Updated') {
-          return new Date(b.updated) - new Date(a.updated);
-        } else if (sortOption === 'Furthest Back Updated') {
-          return new Date(a.updated) - new Date(b.updated);
-        }
-        return 0;
+        const sortFunctions = {
+          'A-Z': () => a.title.localeCompare(b.title),
+          'Z-A': () => b.title.localeCompare(a.title),
+          'Most Recently Updated': () => new Date(b.updated) - new Date(a.updated),
+          'Furthest Back Updated': () => new Date(a.updated) - new Date(b.updated),
+        };
+        return sortFunctions[sortOption]();
       });
   };
 
@@ -59,13 +53,17 @@ function ShowList({ shows, favourites, setFavourites }) {
       const response = await fetch(`https://podcast-api.netlify.app/id/${showId}`);
       const data = await response.json();
       setSelectedShow(data);
-      setSelectedSeason(null);
-      setSeasonEpisodes([]);
-      setSeasonImage(null);
+      resetSeasonData();
       setIsModalOpen(true);
     } catch (error) {
       console.error('Error fetching show details:', error);
     }
+  };
+
+  const resetSeasonData = () => {
+    setSelectedSeason(null);
+    setSeasonEpisodes([]);
+    setSeasonImage(null);
   };
 
   const handleSeasonSelect = (season) => {
@@ -90,121 +88,103 @@ function ShowList({ shows, favourites, setFavourites }) {
         fav.seasonTitle === selectedSeason.title
     );
 
-    if (alreadyFavorited) {
-      setFavourites(
-        favourites.filter(
-          (fav) =>
-            !(
-              fav.episode === episode.episode &&
-              fav.showTitle === selectedShow.title &&
-              fav.seasonTitle === selectedSeason.title
-            )
-        )
-      );
-    } else {
-      setFavourites([...favourites, favorite]);
-    }
+    setFavourites(alreadyFavorited
+      ? favourites.filter((fav) => !(fav.episode === episode.episode && fav.showTitle === selectedShow.title && fav.seasonTitle === selectedSeason.title))
+      : [...favourites, favorite]);
   };
+
+  const renderSortAndFilter = () => (
+    <div style={styles.navBar}>
+      {renderDropdown('Sort By', 'sort-options', sortOption, setSortOption, ['A-Z', 'Z-A', 'Most Recently Updated', 'Furthest Back Updated'])}
+      {renderDropdown('Filter by Genre', 'genre-filter', selectedGenre, setSelectedGenre, Object.keys(genresMap).map(genreId => genreId))}
+    </div>
+  );
+
+  const renderDropdown = (label, id, value, setValue, options) => (
+    <div style={styles.dropdown}>
+      <label htmlFor={id}>{label}: </label>
+      <select id={id} value={value} onChange={(e) => setValue(e.target.value)} style={styles.dropdownSelect}>
+        {options.map(option => (
+          <option key={option} value={option}>
+            {option === 'All' ? 'All' : genresMap[option] || option}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
+  const renderShowCard = (show) => (
+    <div key={show.id} style={styles.showCard} onClick={() => handleShowClick(show.id)}>
+      <img src={show.image} alt={show.title} style={styles.showImage} />
+      <h2 style={styles.showTitle}>{show.title}</h2>
+      <p>{show.genres.map(genreId => genresMap[genreId]).filter(Boolean).join(', ') || 'Loading genres...'}</p>
+      <p>
+        {show.seasons} Season{show.seasons > 1 ? 's' : ''}
+      </p>
+      <p>Last Updated: {new Date(show.updated).toLocaleDateString()}</p>
+    </div>
+  );
+
+  const renderModalContent = () => {
+    if (!selectedShow) return null;
+    return (
+      <div>
+        <h2>{selectedShow.title}</h2>
+        <p>{selectedShow.description}</p>
+        <h3>Select a Season:</h3>
+        {selectedShow.seasons.map(season => (
+          <button
+            key={season.season}
+            onClick={() => handleSeasonSelect(season)}
+            style={{
+              margin: '5px',
+              padding: '5px',
+              backgroundColor: selectedSeason && selectedSeason.season === season.season ? 'lightblue' : 'white',
+            }}
+          >
+            {season.title}
+          </button>
+        ))}
+        {selectedSeason && renderSeasonEpisodes()}
+      </div>
+    );
+  };
+
+  const renderSeasonEpisodes = () => (
+    <div style={{ marginTop: '20px' }}>
+      {seasonImage && <img src={seasonImage} alt={selectedSeason.title} style={styles.seasonImage} />}
+      <h4>{`Episodes for ${selectedSeason.title}`}</h4>
+      {seasonEpisodes.length > 0 ? (
+        seasonEpisodes.map((episode) => (
+          <div key={episode.episode}>
+            <h5>
+              Episode {episode.episode}: {episode.title}
+            </h5>
+            <p>{episode.description}</p>
+            <button onClick={() => toggleEpisodeFavourite(episode)}>
+              {favourites.some(
+                (fav) =>
+                  fav.episode === episode.episode &&
+                  fav.showTitle === selectedShow.title &&
+                  fav.seasonTitle === selectedSeason.title
+              )
+                ? 'Unfavourite'
+                : 'Favourite'}
+            </button>
+          </div>
+        ))
+      ) : (
+        <p>No episodes available for this season.</p>
+      )}
+    </div>
+  );
 
   return (
     <div style={styles.container}>
-      {/* Nav Bar with Sorting and Genre Filter */}
-      <div style={styles.navBar}>
-        <div style={styles.dropdown}>
-          <label htmlFor="sort-options">Sort By: </label>
-          <select
-            id="sort-options"
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            style={styles.dropdownSelect}
-          >
-            <option value="A-Z">A-Z</option>
-            <option value="Z-A">Z-A</option>
-            <option value="Most Recently Updated">Most Recently Updated</option>
-            <option value="Furthest Back Updated">Furthest Back Updated</option>
-          </select>
-        </div>
-        <div style={styles.dropdown}>
-          <label htmlFor="genre-filter">Filter by Genre: </label>
-          <select
-            id="genre-filter"
-            value={selectedGenre}
-            onChange={(e) => setSelectedGenre(e.target.value)}
-            style={styles.dropdownSelect}
-          >
-            {Object.keys(genresMap).map((genreId) => (
-              <option key={genreId} value={genreId}>
-                {genresMap[genreId]}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Display Shows */}
-      {filteredAndSortedShows().map((show) => (
-        <div key={show.id} style={styles.showCard} onClick={() => handleShowClick(show.id)}>
-          <img src={show.image} alt={show.title} style={styles.showImage} />
-          <h2 style={styles.showTitle}>{show.title}</h2>
-          <p>{show.genres.map(genreId => genresMap[genreId]).filter(Boolean).join(', ') || 'Loading genres...'}</p>
-          <p>
-            {show.seasons} Season{show.seasons > 1 ? 's' : ''}
-          </p>
-          <p>Last Updated: {new Date(show.updated).toLocaleDateString()}</p>
-        </div>
-      ))}
-
+      {renderSortAndFilter()}
+      {filteredAndSortedShows().map(renderShowCard)}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {selectedShow && (
-          <div>
-            <h2>{selectedShow.title}</h2>
-            <p>{selectedShow.description}</p>
-            <h3>Select a Season:</h3>
-            {selectedShow.seasons.map((season) => (
-              <button
-                key={season.season}
-                onClick={() => handleSeasonSelect(season)}
-                style={{
-                  margin: '5px',
-                  padding: '5px',
-                  backgroundColor:
-                    selectedSeason && selectedSeason.season === season.season ? 'lightblue' : 'white',
-                }}
-              >
-                {season.title}
-              </button>
-            ))}
-
-            {selectedSeason && (
-              <div style={{ marginTop: '20px' }}>
-                {seasonImage && <img src={seasonImage} alt={selectedSeason.title} style={styles.seasonImage} />}
-                <h4>{`Episodes for ${selectedSeason.title}`}</h4>
-                {seasonEpisodes.length > 0 ? (
-                  seasonEpisodes.map((episode) => (
-                    <div key={episode.episode}>
-                      <h5>
-                        Episode {episode.episode}: {episode.title}
-                      </h5>
-                      <p>{episode.description}</p>
-                      <button onClick={() => toggleEpisodeFavourite(episode)}>
-                        {favourites.some(
-                          (fav) =>
-                            fav.episode === episode.episode &&
-                            fav.showTitle === selectedShow.title &&
-                            fav.seasonTitle === selectedSeason.title
-                        )
-                          ? 'Unfavourite'
-                          : 'Favourite'}
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p>No episodes available for this season.</p>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        {renderModalContent()}
       </Modal>
     </div>
   );

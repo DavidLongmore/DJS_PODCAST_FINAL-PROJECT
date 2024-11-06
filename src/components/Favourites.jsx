@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Favourites({ favourites, toggleEpisodeFavourite }) {
+function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites }) {
   const [sortOption, setSortOption] = useState('A-Z');
 
   // Group favorites by show, then by season
@@ -31,6 +31,12 @@ function Favourites({ favourites, toggleEpisodeFavourite }) {
     return 0;
   });
 
+  const handleResetFavourites = () => {
+    if (window.confirm("Are you sure you want to reset all favorites? This action cannot be undone.")) {
+      resetFavourites(); // Call the function to reset favorites
+    }
+  };
+
   return (
     <div>
       <h2>Favourites</h2>
@@ -48,6 +54,10 @@ function Favourites({ favourites, toggleEpisodeFavourite }) {
           <option value="Least Recently Updated">Least Recently Updated</option>
         </select>
       </div>
+
+      <button onClick={handleResetFavourites} style={styles.resetButton}>
+        Reset All Favourites
+      </button>
 
       {sortedFavourites.map((showTitle) => {
         const show = groupedFavourites[showTitle];
@@ -87,6 +97,15 @@ const styles = {
   dropdownSelect: {
     padding: '5px',
     fontSize: '16px',
+  },
+  resetButton: {
+    marginBottom: '20px',
+    padding: '10px',
+    backgroundColor: '#d9534f', // Bootstrap danger color
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
   },
   showSection: {
     marginBottom: '20px',

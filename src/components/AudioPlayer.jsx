@@ -1,67 +1,59 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const AudioPlayer = ({ audioUrl, onClose }) => {
-  const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const audioRef = React.useRef(new Audio(audioUrl));
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = currentTime; // Set the current time when audio URL changes
+    const audio = audioRef.current;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+      setDuration(audio.duration);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    
+    if (isPlaying) {
+      audio.play();
+    } else {
+      audio.pause();
+    }
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.pause(); // Stop audio when unmounting
+    };
+  }, [isPlaying, audioUrl]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
       if (isPlaying) {
-        audioRef.current.play();
-      } else {
-        audioRef.current.pause();
+        const message = 'You have audio playing. Are you sure you want to leave?';
+        e.returnValue = message; // For Chrome
+        return message; // For Firefox
       }
-    }
-  }, [audioUrl, isPlaying, currentTime]);
+    };
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-      setDuration(audioRef.current.duration);
-    }
-  };
-
-  const handleClose = () => {
-    setIsPlaying(false); // Stop audio when closing
-    onClose();
-  };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isPlaying]);
 
   return (
-    <div style={styles.modal}>
-      <audio ref={audioRef} src={audioUrl} onTimeUpdate={handleTimeUpdate} onEnded={() => setIsPlaying(false)} />
-      <button onClick={handlePlayPause}>{isPlaying ? 'Pause' : 'Play'}</button>
-      <div style={styles.progress}>
-        <progress value={currentTime} max={duration}></progress>
-        <span>{currentTime.toFixed(2)} / {duration.toFixed(2)}</span>
+    <div className="audio-player">
+      <button onClick={() => setIsPlaying(!isPlaying)}>
+        {isPlaying ? 'Pause' : 'Play'}
+      </button>
+      <div>
+        <span>Current Time: {Math.floor(currentTime)} / {Math.floor(duration)}</span>
       </div>
-      <button onClick={handleClose}>Close</button>
+      <button onClick={onClose}>Close Player</button>
     </div>
   );
-};
-
-// Styles
-const styles = {
-  modal: {
-    position: 'fixed',
-    bottom: '0',
-    left: '0',
-    right: '0',
-    backgroundColor: '#fff',
-    padding: '10px',
-    boxShadow: '0 -2px 10px rgba(0,0,0,0.5)',
-    zIndex: 1000,
-  },
-  progress: {
-    display: 'flex',
-    alignItems: 'center',
-  },
 };
 
 export default AudioPlayer;
