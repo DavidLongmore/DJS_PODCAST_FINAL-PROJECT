@@ -1,70 +1,63 @@
-# Getting Started with Create React App
+# Podcast App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to the Podcast App! This project is designed to provide users with an easy way to discover, listen to, and manage their favorite podcasts. The app allows users to browse a list of available shows, manage favorites, listen to episodes, and track their listening progress seamlessly.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Browse Podcasts**: Discover a variety of podcasts, complete with images, seasons, and episodes.
+- **Favorite Management**: Add episodes to your favorites for easy access. Favorites are saved across sessions using local storage.
+- **Audio Player**: Play podcast episodes directly from the app using a built-in audio player. The player is accessible throughout the app, even when navigating between different sections.
+- **Track Listening Progress**: Episodes listened to all the way through are tracked and indicated within the app.
+- **Sorting and Filtering**: Sort and filter shows based on genres and other attributes, ensuring users can easily find the content they are interested in.
 
-### `npm start`
+## Setup Instructions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+To get started with the Podcast App, follow these steps:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **Clone the Repository**:
+   ```bash
+   git clone <repository-url>
+   ```
 
-### `npm test`
+2. **Navigate to the Project Directory**:
+   ```bash
+   cd podcast-app
+   ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. **Install Dependencies**:
+   Ensure you have Node.js installed, then run:
+   ```bash
+   npm install
+   ```
 
-### `npm run build`
+4. **Start the Development Server**:
+   To start the app locally:
+   ```bash
+   npm start
+   ```
+   The app will be available at [http://localhost:3000](http://localhost:3000).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Usage
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Browsing Shows**: The homepage displays a list of shows, sortable by genre and updated status.
+- **Viewing Show Details**: Click on any show to view its seasons and episodes. You can also favorite episodes directly from the show details view.
+- **Playing Episodes**: Click on an episode to open the audio player modal at the bottom of the screen. The player stays open as you navigate the app, ensuring a continuous listening experience.
+- **Managing Favorites**: Visit the favorites section to see all the episodes you have favorited. Favorites are grouped by show and season, with the ability to remove items as needed.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Project Structure
 
-### `npm run eject`
+- **AudioPlayer.jsx**: Handles the functionality of playing podcast episodes, tracking listening progress, and maintaining playback across different views.
+- **Favourites.jsx**: Displays the user's favorited episodes, grouped by show and season.
+- **Loader.jsx**: A simple loading component used to indicate data fetching throughout the app.
+- **Modal.jsx**: Used for rendering modals, including the audio player and episode details.
+- **ShowList.jsx**: Displays the list of available shows, with sorting and filtering options to enhance discoverability.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Contact Information
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+For any questions, suggestions, or issues, feel free to reach out:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Name**: David Longmore
+- **Email**: [davidlongmore3@gmail.com]
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+We welcome contributions and feedback to make this project better for everyone!
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

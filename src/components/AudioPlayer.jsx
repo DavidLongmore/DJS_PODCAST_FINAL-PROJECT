@@ -32,6 +32,7 @@ function AudioPlayer({ episode, onClose }) {
   return (
     <div className="audio-player">
       <div className="audio-content">
+        <button className="exit-button" onClick={onClose}>Exit</button>
         <span className="close" onClick={onClose}>&times;</span>
         <h3>{episode.title}</h3>
         <audio ref={audioRef} controls>

@@ -46,13 +46,13 @@ function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites, setSe
   return (
     <div className="favourites-container">
       <h2>Favourite Episodes</h2>
-      <div style={styles.dropdown}>
+      <div className="dropdown">
         <label htmlFor="sort-options">Sort By: </label>
         <select
           id="sort-options"
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
-          style={styles.dropdownSelect}
+          className="dropdownSelect"
         >
           <option value="A-Z">A-Z</option>
           <option value="Z-A">Z-A</option>
@@ -61,7 +61,7 @@ function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites, setSe
         </select>
       </div>
 
-      <button onClick={handleResetFavourites} style={styles.resetButton}>
+      <button onClick={handleResetFavourites} className="resetButton">
         Reset All Favourites
       </button>
 
@@ -70,15 +70,15 @@ function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites, setSe
         const lastUpdated = new Date(show.updated).toLocaleString();
 
         return (
-          <div key={showTitle} style={styles.showSection}>
+          <div key={showTitle} className="showSection">
             <h3>
-              {showTitle} <span style={styles.updatedDate}>(Last updated: {lastUpdated})</span>
+              {showTitle} <span className="updatedDate">(Last updated: {lastUpdated})</span>
             </h3>
             {Object.keys(show.seasons).map((seasonTitle) => (
-              <div key={seasonTitle} style={styles.seasonSection}>
+              <div key={seasonTitle} className="seasonSection">
                 <h4>{seasonTitle}</h4>
                 {show.seasons[seasonTitle].map((episode) => (
-                  <div key={episode.episode} style={styles.episode}>
+                  <div key={episode.episode} className="episode">
                     <div>
                       <p>{`Episode ${episode.episode}: ${episode.title}`}</p>
                       <p>{`Added: ${new Date(episode.addedAt).toLocaleString()}`}</p>
@@ -101,45 +101,5 @@ function Favourites({ favourites, toggleEpisodeFavourite, resetFavourites, setSe
     </div>
   );
 }
-
-// Styles
-const styles = {
-  dropdown: {
-    marginBottom: '20px',
-  },
-  dropdownSelect: {
-    padding: '5px',
-    fontSize: '16px',
-  },
-  resetButton: {
-    marginBottom: '20px',
-    padding: '10px',
-    backgroundColor: '#d9534f', // Bootstrap danger color
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  showSection: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  seasonSection: {
-    marginLeft: '20px',
-    marginBottom: '10px',
-  },
-  episode: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '5px 0',
-  },
-  updatedDate: {
-    fontSize: '14px',
-    color: '#666',
-    marginLeft: '10px',
-  },
-};
 
 export default Favourites;

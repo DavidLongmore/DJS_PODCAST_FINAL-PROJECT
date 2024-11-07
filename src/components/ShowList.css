@@ -1,0 +1,99 @@
+/* ShowList.css */
+
+/* Container styling for the show list */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* Navigation bar styling for sorting and filtering */
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px 0;
+}
+
+/* Search bar styling */
+.searchBar {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px 0;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Dropdown styling for sorting and genre selection */
+.dropdown {
+  margin: 0 120px;
+}
+
+.dropdownSelect {
+  padding: 5px;
+  font-size: 16px;
+}
+
+/* Show card styling */
+.showCard {
+  width: 24%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.showImage {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.showTitle {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Season image styling */
+.seasonImage {
+  width: 50%;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .showCard {
+      width: 100%;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+  }
+
+  .dropdown {
+      margin: 0;
+  }
+
+  .container {
+      justify-content: center;
+  }
+
+  .showImage {
+      width: 20%;
+      margin-right: 10px;
+  }
+
+  .showTitle {
+      font-size: 16px;
+      text-align: left;
+  }
+}

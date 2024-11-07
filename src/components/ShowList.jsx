@@ -1,6 +1,7 @@
-// ShowList.js
+// Import statements and state initialization
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
+import './ShowList.css'; // Import the new CSS file
 
 function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
   const [selectedShow, setSelectedShow] = useState(null);
@@ -11,6 +12,7 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
   const [genresMap, setGenresMap] = useState({});
   const [sortOption, setSortOption] = useState('A-Z');
   const [selectedGenre, setSelectedGenre] = useState('All');
+  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
 
   // Fetch genres
   useEffect(() => {
@@ -27,7 +29,6 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
           console.error(`Error fetching genre with ID ${id}:`, error);
         }
       }
-      // Create a map for genres
       const genresObject = { 'All': 'All', ...Object.fromEntries(genreList.map(genre => [genre.id, genre.title])) };
       setGenresMap(genresObject);
     };
@@ -37,7 +38,11 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
   // Filter and sort shows
   const filteredAndSortedShows = () => {
     return [...shows]
-      .filter((show) => selectedGenre === 'All' || show.genres.includes(parseInt(selectedGenre)))
+      .filter(
+        (show) =>
+          (selectedGenre === 'All' || show.genres.includes(parseInt(selectedGenre))) &&
+          show.title.toLowerCase().includes(searchQuery.toLowerCase()) // Filtering by search query
+      )
       .sort((a, b) => {
         const sortFunctions = {
           'A-Z': () => a.title.localeCompare(b.title),
@@ -78,16 +83,16 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
   };
 
   const renderSortAndFilter = () => (
-    <div style={styles.navBar}>
+    <div className="navBar">
       {renderDropdown('Sort By', 'sort-options', sortOption, setSortOption, ['A-Z', 'Z-A', 'Most Recently Updated', 'Furthest Back Updated'])}
       {renderDropdown('Filter by Genre', 'genre-filter', selectedGenre, setSelectedGenre, Object.keys(genresMap).map(genreId => genreId))}
     </div>
   );
 
   const renderDropdown = (label, id, value, setValue, options) => (
-    <div style={styles.dropdown}>
+    <div className="dropdown">
       <label htmlFor={id}>{label}: </label>
-      <select id={id} value={value} onChange={(e) => setValue(e.target.value)} style={styles.dropdownSelect}>
+      <select id={id} value={value} onChange={(e) => setValue(e.target.value)} className="dropdownSelect">
         {options.map(option => (
           <option key={option} value={option}>
             {option === 'All' ? 'All' : genresMap[option] || option}
@@ -97,10 +102,23 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
     </div>
   );
 
+  // Render search bar
+  const renderSearchBar = () => (
+    <div className="searchBar">
+      <input
+        type="text"
+        placeholder="Search by show title..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="searchInput"
+      />
+    </div>
+  );
+
   const renderShowCard = (show) => (
-    <div key={show.id} style={styles.showCard} onClick={() => handleShowClick(show.id)}>
-      <img src={show.image} alt={show.title} style={styles.showImage} />
-      <h2 style={styles.showTitle}>{show.title}</h2>
+    <div key={show.id} className="showCard" onClick={() => handleShowClick(show.id)}>
+      <img src={show.image} alt={show.title} className="showImage" />
+      <h2 className="showTitle">{show.title}</h2>
       <p>{show.genres.map(genreId => genresMap[genreId]).filter(Boolean).join(', ') || 'Loading genres...'}</p>
       <p>
         {show.seasons} Season{show.seasons > 1 ? 's' : ''}
@@ -136,7 +154,7 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
 
   const renderSeasonEpisodes = () => (
     <div style={{ marginTop: '20px' }}>
-      {seasonImage && <img src={seasonImage} alt={selectedSeason.title} style={styles.seasonImage} />}
+      {seasonImage && <img src={seasonImage} alt={selectedSeason.title} className="seasonImage" />}
       <h4>{`Episodes for ${selectedSeason.title}`}</h4>
       {seasonEpisodes.length > 0 ? (
         seasonEpisodes.map((episode) => (
@@ -166,8 +184,9 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
   );
 
   return (
-    <div style={styles.container}>
+    <div className="container">
       {renderSortAndFilter()}
+      {renderSearchBar()}
       {filteredAndSortedShows().map(renderShowCard)}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {renderModalContent()}
@@ -175,51 +194,5 @@ function ShowList({ shows, toggleFavourite, favourites, setSelectedEpisode }) {
     </div>
   );
 }
-
-// Styles
-const styles = {
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  navBar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: '20px',
-    padding: '10px 0',
-  },
-  dropdown: {
-    margin: '0 120px',
-  },
-  dropdownSelect: {
-    padding: '5px',
-    fontSize: '16px',
-  },
-  showCard: {
-    width: '24%',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '10px',
-    margin: '10px',
-    cursor: 'pointer',
-    textAlign: 'center',
-  },
-  showImage: {
-    width: '100%',
-    borderRadius: '4px',
-  },
-  showTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-  },
-  seasonImage: {
-    width: '100%',
-    borderRadius: '4px',
-    marginTop: '10px',
-  },
-};
 
 export default ShowList;

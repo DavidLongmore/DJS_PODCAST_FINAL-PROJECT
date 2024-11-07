@@ -1,3 +1,5 @@
+/* Modal.css */
+
 .modal {
     position: fixed;
     top: 0;
@@ -38,6 +40,33 @@
     font-size: 1.5rem;
     /* Larger close icon */
     cursor: pointer;
-    color: #333;
+    color: #ffffff;
     /* Close icon color */
 }
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-height: 90%;
+    }
+
+    .modal-content img {
+        width: 70%;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .showImage {
+        width: 80%;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+/* Center image in modal */
+.modal-content img {
+    display: block;
+    margin: 0 auto;
+}
+

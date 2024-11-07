@@ -1,0 +1,92 @@
+/* Favourites.css */
+
+.favourites-container {
+  padding: 20px;
+}
+
+.dropdown {
+  margin-bottom: 20px;
+}
+
+.dropdownSelect {
+  padding: 5px;
+  font-size: 16px;
+}
+
+.resetButton {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #d9534f; /* Bootstrap danger color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.showSection {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.seasonSection {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.episode {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.updatedDate {
+  font-size: 14px;
+  color: #666;
+  margin-left: 10px;
+}
+
+.unfavourite-button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #f0ad4e; /* Bootstrap warning color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.play-button {
+  padding: 5px 10px;
+  background-color: #5cb85c; /* Bootstrap success color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .favourites-container {
+      text-align: center;
+  }
+
+  .showSection,
+  .seasonSection {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+  }
+
+  .episode {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .unfavourite-button,
+  .play-button {
+      width: 100%;
+      margin-bottom: 5px;
+  }
+}
