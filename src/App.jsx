@@ -74,7 +74,7 @@ function App() {
   return (
     <div className="App">
       <nav style={styles.nav}>
-        <h1 style={styles.title}>Podcast App</h1>
+        <h1 style={styles.title}>ListenIN</h1>
         <div style={styles.navLinks}>
           <button onClick={() => setView('shows')}>Shows</button>
           <button onClick={() => setView('favourites')}>Favourites</button>
